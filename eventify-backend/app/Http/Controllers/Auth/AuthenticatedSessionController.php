@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -13,28 +14,31 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(Request $request)
     {
-        // Validation
         $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
+            'email' => 'required|email',
+            'password' => 'required',
         ]);
 
-        // Tentative de login
-        if (!Auth::attempt($request->only('email','password'))) {
-            return response()->json([
-                'message' => 'Invalid credentials.'
-            ], 401);
+        if (!Auth::attempt($request->only('email', 'password'))) {
+            return response()->json(['message' => 'Invalid credentials.'], 401);
         }
 
-        $user = $request->user();
+        // ⚡ Récupère l'utilisateur directement depuis la base
+        $user = User::where('email', $request->email)->first();
 
-        // Création d'un token Sanctum
+        // ⚡ Crée un token Sanctum
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'message' => 'User logged in successfully.',
-            'user' => $user,
-            'token' => $token,
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+            ],
         ], 200);
     }
 
@@ -45,7 +49,6 @@ class AuthenticatedSessionController extends Controller
     {
         $user = $request->user();
 
-        // Supprime tous les tokens de l'utilisateur
         $user->tokens()->delete();
 
         return response()->json([
