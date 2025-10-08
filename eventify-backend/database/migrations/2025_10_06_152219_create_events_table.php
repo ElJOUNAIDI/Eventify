@@ -13,6 +13,7 @@ return new class extends Migration {
             $table->text('description')->nullable();
             $table->string('category')->nullable();
             $table->string('location')->nullable();
+            $table->string('image')->nullable(); // 🟢 ajout de la colonne image
             $table->dateTime('start_date');
             $table->dateTime('end_date');
             $table->integer('available_seats')->default(0);

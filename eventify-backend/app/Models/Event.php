@@ -17,18 +17,25 @@ class Event extends Model
         'start_date',
         'end_date',
         'available_seats',
+        'image',
         'user_id',
     ];
 
-    // Lien avec l'organisateur
+    // 🔹 Lien avec l'organisateur
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // Lien avec les utilisateurs inscrits
+    // ❌ Ancien lien (par table pivot) — tu peux le garder si tu veux encore l’utiliser
     public function users()
     {
         return $this->belongsToMany(User::class);
+    }
+
+    // ✅ Nouveau lien vers les inscriptions
+    public function registrations()
+    {
+        return $this->hasMany(EventRegistration::class);
     }
 }
