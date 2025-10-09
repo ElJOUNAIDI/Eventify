@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
+import Navbar from "../components/Navbar";
 const Home = ({ user }) => {
   const [events, setEvents] = useState([]);
   const navigate = useNavigate();
@@ -28,6 +28,8 @@ const Home = ({ user }) => {
   };
 
   return (
+    <>
+    {/* <Navbar /> */}
     <div style={{ padding: "20px" }}>
       <h1 style={{ marginBottom: "20px" }}>🎉 Événements disponibles</h1>
 
@@ -100,6 +102,7 @@ const Home = ({ user }) => {
         </div>
       )}
     </div>
+    </>
   );
 };
 
