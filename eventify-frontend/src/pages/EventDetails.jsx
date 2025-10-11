@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/client";
+import "../styles/EventDetails.css";
 
 const EventDetails = ({ user }) => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [event, setEvent] = useState(null);
   const [showForm, setShowForm] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(""); // ⏳ Temps restant
+  const [isEditing, setIsEditing] = useState(false);
+  const [timeLeft, setTimeLeft] = useState("");
+
   const [formData, setFormData] = useState({
     full_name: "",
     email: "",
@@ -14,12 +18,31 @@ const EventDetails = ({ user }) => {
     location: "",
   });
 
-  // 🔹 Charger les détails de l'événement
+  const [editData, setEditData] = useState({
+    title: "",
+    description: "",
+    category: "",
+    location: "",
+    start_date: "",
+    end_date: "",
+    available_seats: "",
+  });
+
+  // 🔹 Charger l'événement
   useEffect(() => {
     const fetchEvent = async () => {
       try {
         const res = await api.get(`/events/${id}`);
         setEvent(res.data);
+        setEditData({
+          title: res.data.title,
+          description: res.data.description,
+          category: res.data.category,
+          location: res.data.location,
+          start_date: res.data.start_date,
+          end_date: res.data.end_date,
+          available_seats: res.data.available_seats,
+        });
       } catch {
         alert("Erreur récupération événement");
       }
@@ -27,7 +50,7 @@ const EventDetails = ({ user }) => {
     fetchEvent();
   }, [id]);
 
-  // 🔹 Pré-remplir automatiquement la localisation
+  // 🔹 Pré-remplir localisation
   useEffect(() => {
     if (event) {
       setFormData((prev) => ({
@@ -37,10 +60,9 @@ const EventDetails = ({ user }) => {
     }
   }, [event]);
 
-  // 🔹 Compteur de temps restant jusqu’à la fin de l’événement
+  // 🔹 Compte à rebours
   useEffect(() => {
     if (!event) return;
-
     const endTime = new Date(event.end_date).getTime();
 
     const interval = setInterval(() => {
@@ -59,133 +81,232 @@ const EventDetails = ({ user }) => {
       );
       const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
       setTimeLeft(`${days}j ${hours}h ${minutes}m ${seconds}s restants`);
     }, 1000);
 
     return () => clearInterval(interval);
   }, [event]);
 
-  // 🔹 Gérer la saisie du formulaire
+  // 🔹 Formulaire inscription
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // 🔹 Envoyer l'inscription
+  // 🔹 Formulaire édition
+  const handleEditChange = (e) => {
+    setEditData({ ...editData, [e.target.name]: e.target.value });
+  };
+
+  // 🔹 Soumettre l'inscription
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await api.post(`/events/${id}/register`, formData);
       alert("✅ Inscription réussie !");
       setShowForm(false);
-      setFormData({
-        full_name: "",
-        email: "",
-        phone_number: "",
-        location: event.location || "",
-      });
     } catch {
       alert("❌ Erreur lors de l'inscription");
     }
   };
 
-  if (!event) return <p>Chargement...</p>;
+  // 🔹 Mettre à jour l’événement
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await api.put(`/events/${id}`, editData);
+      alert("✅ Événement mis à jour !");
+      setIsEditing(false);
+      setEvent({ ...event, ...editData });
+    } catch {
+      alert("❌ Erreur lors de la mise à jour");
+    }
+  };
+
+  // 🔹 Supprimer l’événement (ADMIN)
+  const handleDelete = async () => {
+    const confirmDelete = window.confirm(
+      "⚠️ Êtes-vous sûr de vouloir supprimer cet événement ?"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await api.delete(`/events/${id}`);
+      alert("🗑️ Événement supprimé avec succès !");
+      navigate("/admin-dashboard"); // redirige vers le tableau de bord admin
+    } catch (error) {
+      console.error(error);
+      alert("❌ Échec de la suppression de l’événement");
+    }
+  };
+
+  if (!event) return <p className="loading-text">Chargement...</p>;
+
+  const isOrganizerOwner =
+    user?.role === "organisateur" && user?.id === event.user?.id;
 
   return (
-    <div className="p-6">
-      <h2>{event.title}</h2>
+    <div className="event-details-page">
+      <div className="event-card">
+        <h2 className="event-title">
+          {isEditing ? "Modifier l’événement" : event.title}
+        </h2>
 
-      {/* Image de l'événement */}
-      {event.image && (
-        <img
-          src={`http://127.0.0.1:8000/storage/${event.image}`}
-          alt={event.title}
-          style={{ width: "100%", maxWidth: "400px", borderRadius: "10px", marginTop: "10px" }}
-        />
-      )}
+        {/* Image */}
+        {event.image && !isEditing && (
+          <img
+            src={`http://127.0.0.1:8000/storage/${event.image}`}
+            alt={event.title}
+            className="event-image"
+          />
+        )}
 
-      {/* Catégorie */}
-      {event.category && <p>🏷️ Catégorie : {event.category}</p>}
+        {/* === Mode Édition === */}
+        {isEditing ? (
+          <form className="register-form" onSubmit={handleEditSubmit}>
+            <label>Titre :</label>
+            <input
+              type="text"
+              name="title"
+              value={editData.title}
+              onChange={handleEditChange}
+              required
+            />
+            <label>Description :</label>
+            <textarea
+              name="description"
+              rows="4"
+              value={editData.description}
+              onChange={handleEditChange}
+            />
+            <label>Catégorie :</label>
+            <input
+              type="text"
+              name="category"
+              value={editData.category}
+              onChange={handleEditChange}
+            />
+            <label>Lieu :</label>
+            <input
+              type="text"
+              name="location"
+              value={editData.location}
+              onChange={handleEditChange}
+            />
+            <label>Date de début :</label>
+            <input
+              type="datetime-local"
+              name="start_date"
+              value={editData.start_date}
+              onChange={handleEditChange}
+            />
+            <label>Date de fin :</label>
+            <input
+              type="datetime-local"
+              name="end_date"
+              value={editData.end_date}
+              onChange={handleEditChange}
+            />
+            <label>Places disponibles :</label>
+            <input
+              type="number"
+              name="available_seats"
+              value={editData.available_seats}
+              onChange={handleEditChange}
+            />
 
-      <p>{event.description}</p>
-      <p>📍 Lieu : {event.location}</p>
-      <p>🗓️ Début : {event.start_date}</p>
-      <p>🗓️ Fin : {event.end_date}</p>
-      <p>🎟️ Places disponibles : {event.available_seats}</p>
-      <p>👤 Organisateur : {event.user?.name}</p>
+            <button type="submit" className="submit-btn">
+              💾 Enregistrer les modifications
+            </button>
+            <button
+              type="button"
+              className="delete-btn"
+              onClick={() => setIsEditing(false)}
+            >
+              Annuler
+            </button>
+          </form>
+        ) : (
+          <>
+            <p>🏷️ Catégorie : {event.category}</p>
+            <p>📝 Description : {event.description}</p>
+            <p>📍 Lieu : {event.location}</p>
+            <p>🗓️ Début : {event.start_date}</p>
+            <p>🗓️ Fin : {event.end_date}</p>
+            <p>🎟️ Places : {event.available_seats}</p>
+            <p>👤 Organisateur : {event.user?.name}</p>
 
-      {/* Compte à rebours */}
-      <p
-        style={{
-          marginTop: "10px",
-          fontWeight: "bold",
-          color: timeLeft.includes("terminé") ? "#dc2626" : "#2563eb",
-        }}
-      >
-        ⏳ {timeLeft}
-      </p>
+            <p
+              className={`time-left ${
+                timeLeft.includes("terminé") ? "expired" : "active"
+              }`}
+            >
+              ⏳ {timeLeft}
+            </p>
 
-      {/* Bouton d'inscription utilisateur */}
-      {user?.role === "user" && !showForm && (
-        <button
-          onClick={() => setShowForm(true)}
-          style={{
-            marginTop: "10px",
-            padding: "10px 15px",
-            backgroundColor: "#2563eb",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer",
-          }}
-        >
-          S'inscrire
-        </button>
-      )}
+            {/* === Actions selon rôle === */}
+            {user?.role === "user" && !showForm && (
+              <button className="register-btn" onClick={() => setShowForm(true)}>
+                S’inscrire à l’événement
+              </button>
+            )}
 
-      {/* Formulaire d'inscription */}
-      {showForm && (
-        <form
-          onSubmit={handleSubmit}
-          style={{
-            marginTop: "20px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "10px",
-            maxWidth: "400px",
-          }}
-        >
-          <label>Nom complet :</label>
-          <input type="text" name="full_name" value={formData.full_name} onChange={handleChange} required />
+            {showForm && (
+              <form className="register-form" onSubmit={handleSubmit}>
+                <label>Nom complet :</label>
+                <input
+                  type="text"
+                  name="full_name"
+                  value={formData.full_name}
+                  onChange={handleChange}
+                  required
+                />
+                <label>Email :</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+                <label>Téléphone :</label>
+                <input
+                  type="tel"
+                  name="phone_number"
+                  value={formData.phone_number}
+                  onChange={handleChange}
+                  required
+                />
+                <label>Lieu :</label>
+                <input
+                  type="text"
+                  name="location"
+                  value={formData.location}
+                  readOnly
+                  className="readonly-input"
+                />
+                <button type="submit" className="submit-btn">
+                  Valider l’inscription
+                </button>
+              </form>
+            )}
 
-          <label>Email :</label>
-          <input type="email" name="email" value={formData.email} onChange={handleChange} required />
+            {isOrganizerOwner && (
+              <button
+                className="register-btn"
+                onClick={() => setIsEditing(true)}
+              >
+                ✏️ Modifier l’événement
+              </button>
+            )}
 
-          <label>Numéro de téléphone :</label>
-          <input type="tel" name="phone_number" value={formData.phone_number} onChange={handleChange} required />
-
-          <label>Localisation de l'événement :</label>
-          <input type="text" name="location" value={formData.location} readOnly style={{ backgroundColor: "#f3f4f6", cursor: "not-allowed" }} />
-
-          <button type="submit">Valider</button>
-        </form>
-      )}
-
-      {/* Bouton admin (supprimer event) */}
-      {user?.role === "admin" && (
-        <button
-          style={{
-            marginTop: "10px",
-            backgroundColor: "#ef4444",
-            color: "white",
-            border: "none",
-            padding: "10px 15px",
-            borderRadius: "6px",
-          }}
-        >
-          Supprimer l'événement
-        </button>
-      )}
+            {user?.role === "admin" && (
+              <button className="delete-btn" onClick={handleDelete}>
+                🗑️ Supprimer l’événement
+              </button>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };

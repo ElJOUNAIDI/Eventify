@@ -1,0 +1,215 @@
+/* === Global layout === */
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+  background: #f9fafb;
+  font-family: "Poppins", sans-serif;
+  color: #1e293b;
+  overflow: hidden;
+}
+
+/* === Sidebar === */
+.sidebar {
+  width: 250px;
+  background: linear-gradient(180deg, #2563eb, #1e40af);
+  color: #fff;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform 0.3s ease-in-out;
+}
+
+.sidebar h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 22px;
+  letter-spacing: 1px;
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar a {
+  text-decoration: none;
+  color: #e0e7ff;
+  padding: 12px 15px;
+  margin: 6px 0;
+  border-radius: 8px;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.sidebar a:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateX(5px);
+}
+
+/* === Sidebar mobile behavior === */
+.menu-btn {
+  background: #2563eb;
+  border: none;
+  color: white;
+  font-size: 22px;
+  padding: 6px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: none;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 22px;
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  cursor: pointer;
+  display: none;
+}
+
+/* === Main Content === */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  transition: all 0.3s ease;
+}
+
+/* === Top Nav === */
+.top-nav {
+  background: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.top-nav h1 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.top-nav input {
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  width: 200px;
+  transition: all 0.2s;
+}
+
+.top-nav input:focus {
+  border-color: #2563eb;
+  outline: none;
+}
+
+/* === Cards Section === */
+.dashboard-cards {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(37, 99, 235, 0.08);
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(37, 99, 235, 0.15);
+}
+
+.card h3 {
+  font-size: 16px;
+  color: #2563eb;
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* === Create Event Card === */
+.create-card {
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  color: white;
+}
+
+.create-card h3 {
+  color: white;
+}
+
+.create-card p {
+  color: #dbeafe;
+}
+
+.btn-create {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 10px 15px;
+  background-color: white;
+  color: #2563eb;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.btn-create:hover {
+  background-color: #f1f5f9;
+}
+
+/* === Events section === */
+.events-section {
+  padding: 20px;
+}
+
+/* === Responsive === */
+@media (max-width: 900px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -250px;
+    height: 100%;
+    z-index: 100;
+  }
+
+  .dashboard-container.sidebar-open .sidebar {
+    transform: translateX(250px);
+  }
+
+  .menu-btn {
+    display: block;
+  }
+
+  .close-btn {
+    display: block;
+  }
+}
+
+@media (max-width: 600px) {
+  .top-nav h1 {
+    font-size: 16px;
+  }
+
+  .top-nav input {
+    width: 140px;
+  }
+
+  .dashboard-cards {
+    grid-template-columns: 1fr;
+  }
+}

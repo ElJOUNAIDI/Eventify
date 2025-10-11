@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/client';
-import './Login.css';
+import '../styles/Login.css';
 
 const Login = ({ setUser }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [active, setActive] = useState(true);
   const navigate = useNavigate();
 
   const handleLogin = async e => {
@@ -27,41 +26,32 @@ const Login = ({ setUser }) => {
 
   return (
     <div className="login-page">
-      <section className={`login-wrapper ${active ? 'active' : ''}`}>
-        <div className="login-form login-signup">
-          <header onClick={() => setActive(false)}>Signup</header>
-          <form>
-            <input type="text" placeholder="Full name" required />
-            <input type="text" placeholder="Email address" required />
-            <input type="password" placeholder="Password" required />
-            <div className="login-checkbox">
-              <input type="checkbox" id="signupCheck" />
-              <label htmlFor="signupCheck">I accept all terms & conditions</label>
-            </div>
-            <input type="submit" value="Signup" />
-          </form>
-        </div>
-
+      <section className="login-wrapper active">
         <div className="login-form login">
-          <header onClick={() => setActive(true)}>Login</header>
+          <header>Connexion</header>
           <form onSubmit={handleLogin}>
             <input
-              type="text"
-              placeholder="Email address"
+              type="email"
+              placeholder="Adresse e-mail"
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
             />
             <input
               type="password"
-              placeholder="Password"
+              placeholder="Mot de passe"
               value={password}
               onChange={e => setPassword(e.target.value)}
               required
             />
-            <a href="#">Forgot password?</a>
-            <input type="submit" value="Login" />
+            <a href="#">Mot de passe oublié ?</a>
+            <input type="submit" value="Se connecter" />
           </form>
+
+          <p className="switch-form">
+            Pas encore de compte ?{' '}
+            <span onClick={() => navigate('/register')}>S’inscrire</span>
+          </p>
         </div>
       </section>
     </div>

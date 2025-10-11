@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/client";
+import "../styles/CreateEvent.css";
 
 const CreateEvent = ({ user }) => {
   const [title, setTitle] = useState("");
@@ -14,12 +15,11 @@ const CreateEvent = ({ user }) => {
   const navigate = useNavigate();
 
   if (user?.role !== "organisateur") {
-    return <p>Vous n'avez pas la permission de créer un événement.</p>;
+    return <p className="permission-denied">🚫 Vous n'avez pas la permission de créer un événement.</p>;
   }
 
   const handleCreate = async (e) => {
     e.preventDefault();
-
     try {
       const formData = new FormData();
       formData.append("title", title);
@@ -44,87 +44,65 @@ const CreateEvent = ({ user }) => {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Créer un événement</h2>
-      <form
-        onSubmit={handleCreate}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "10px",
-          maxWidth: "400px",
-        }}
-      >
-        <input
-          placeholder="Titre"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
-
-        <textarea
-          placeholder="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-
-        <input
-          placeholder="Catégorie"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        />
-
-        <input
-          placeholder="Lieu"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-        />
-
-        <label>Date de début :</label>
-        <input
-          type="datetime-local"
-          value={start_date}
-          onChange={(e) => setStartDate(e.target.value)}
-          required
-        />
-
-        <label>Date de fin :</label>
-        <input
-          type="datetime-local"
-          value={end_date}
-          onChange={(e) => setEndDate(e.target.value)}
-          required
-        />
-
-        <input
-          type="number"
-          placeholder="Places disponibles"
-          value={available_seats}
-          onChange={(e) => setSeats(e.target.value)}
-          required
-        />
-
-        <label>Image :</label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setImage(e.target.files[0])}
-        />
-
-        <button
-          type="submit"
-          style={{
-            backgroundColor: "#2563eb",
-            color: "white",
-            padding: "10px 15px",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer",
-          }}
-        >
-          Créer
-        </button>
-      </form>
+    <div className="create-event-container">
+      <div className="create-event-card">
+        <h2>Créer un Événement</h2>
+        <form className="create-event-form" onSubmit={handleCreate}>
+          <input
+            type="text"
+            placeholder="Titre"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
+          <textarea
+            placeholder="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Catégorie"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Lieu"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+          />
+          <label>Date de début :</label>
+          <input
+            type="datetime-local"
+            value={start_date}
+            onChange={(e) => setStartDate(e.target.value)}
+            required
+          />
+          <label>Date de fin :</label>
+          <input
+            type="datetime-local"
+            value={end_date}
+            onChange={(e) => setEndDate(e.target.value)}
+            required
+          />
+          <label>Places disponibles :</label>
+          <input
+            type="number"
+            placeholder="Places disponibles"
+            value={available_seats}
+            onChange={(e) => setSeats(e.target.value)}
+            required
+          />
+          <label>Image :</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setImage(e.target.files[0])}
+          />
+          <button type="submit">Créer</button>
+        </form>
+      </div>
     </div>
   );
 };

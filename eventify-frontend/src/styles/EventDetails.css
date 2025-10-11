@@ -1,0 +1,142 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
+
+.event-details-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 60px 20px;
+  font-family: "Poppins", sans-serif;
+}
+
+.event-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 35px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  animation: fadeIn 0.4s ease;
+}
+
+.event-title {
+  text-align: center;
+  color: #1e3a8a;
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.event-image {
+  width: 100%;
+  border-radius: 12px;
+  margin: 10px 0 20px;
+  object-fit: cover;
+}
+
+p {
+  color: #1f2937;
+  margin: 8px 0;
+  font-size: 15px;
+}
+
+.time-left {
+  margin-top: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.time-left.active {
+  color: #2563eb;
+}
+
+.time-left.expired {
+  color: #dc2626;
+}
+
+.register-btn,
+.delete-btn,
+.submit-btn {
+  display: block;
+  width: 100%;
+  margin-top: 15px;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.register-btn {
+  background: #2563eb;
+  color: white;
+}
+
+.register-btn:hover {
+  background: #1d4ed8;
+}
+
+.delete-btn {
+  background: #ef4444;
+  color: white;
+}
+
+.delete-btn:hover {
+  background: #dc2626;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.register-form input {
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.register-form input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.readonly-input {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+}
+
+.loading-text {
+  color: white;
+  text-align: center;
+  font-size: 18px;
+  margin-top: 100px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .event-card {
+    padding: 25px 20px;
+  }
+  .event-title {
+    font-size: 22px;
+  }
+}

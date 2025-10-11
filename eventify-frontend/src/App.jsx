@@ -35,7 +35,7 @@ function App() {
 
   // ✅ Masquer la navbar sur login/register
   const hideNavbar =
-    location.pathname === "/login" || location.pathname === "/register";
+    location.pathname === "/loginw" || location.pathname === "/registerw";
 
   return (
     <>
