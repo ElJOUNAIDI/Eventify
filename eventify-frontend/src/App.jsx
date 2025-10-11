@@ -1,3 +1,4 @@
+// src/App.jsx
 import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Login from "./pages/Login";
@@ -7,13 +8,16 @@ import EventDetails from "./pages/EventDetails";
 import CreateEvent from "./pages/CreateEvent";
 import AdminDashboard from "./pages/AdminDashboard";
 import OrganisateurDashboard from "./pages/OrganisateurDashboard";
-import Navbar from "./components/Navbar"; // ✅ Import de la navbar
+import UsersAdmin from "./pages/UsersAdmin";
+import Events from "./pages/Events";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import "./App.css";
 
-// ✅ Composant pour protéger les routes
 const PrivateRoute = ({ children, roles }) => {
   const user = JSON.parse(localStorage.getItem("user"));
-  if (!user) return <Navigate to="/login" />;
-  if (roles && !roles.includes(user.role)) return <Navigate to="/" />;
+  if (!user) return <Navigate to="/login" replace />;
+  if (roles && !roles.includes(user.role)) return <Navigate to="/" replace />;
   return children;
 };
 
@@ -21,37 +25,34 @@ function App() {
   const [user, setUser] = useState(null);
   const location = useLocation();
 
-  // ✅ Charger l’utilisateur depuis localStorage au démarrage
   useEffect(() => {
     const u = localStorage.getItem("user");
     if (u) setUser(JSON.parse(u));
   }, []);
 
-  // ✅ Fonction logout
   const handleLogout = () => {
     localStorage.removeItem("user");
     setUser(null);
   };
 
-  // ✅ Masquer la navbar sur login/register
   const hideNavbar =
-    location.pathname === "/loginw" || location.pathname === "/registerw";
+    location.pathname === "/login." || location.pathname === "/register.";
 
   return (
-    <>
+    <div className="app-container">
       {!hideNavbar && <Navbar user={user} onLogout={handleLogout} />}
 
-      <div style={{ padding: "20px" }}>
+      <main className="main-content">
         <Routes>
           {/* Auth */}
           <Route path="/login" element={<Login setUser={setUser} />} />
           <Route path="/register" element={<Register />} />
 
-          {/* Pages publiques */}
+          {/* Public */}
           <Route path="/" element={<Home user={user} />} />
           <Route path="/events" element={<Home user={user} />} />
 
-          {/* Détails événement */}
+          {/* Event details */}
           <Route
             path="/events/:id"
             element={
@@ -61,7 +62,7 @@ function App() {
             }
           />
 
-          {/* Création d’événement (organisateur uniquement) */}
+          {/* Create event */}
           <Route
             path="/create-event"
             element={
@@ -71,7 +72,7 @@ function App() {
             }
           />
 
-          {/* Dashboards */}
+          {/* ✅ Dashboard Admin avec sous-routes */}
           <Route
             path="/admin-dashboard"
             element={
@@ -79,7 +80,13 @@ function App() {
                 <AdminDashboard user={user} />
               </PrivateRoute>
             }
-          />
+          >
+            <Route index element={<Events user={user} />} />
+            <Route path="users" element={<UsersAdmin />} />
+            <Route path="events" element={<Events user={user} />} />
+          </Route>
+
+          {/* Dashboard Organisateur */}
           <Route
             path="/organisateur-dashboard"
             element={
@@ -89,11 +96,13 @@ function App() {
             }
           />
 
-          {/* Redirection pour routes inconnues */}
-          <Route path="*" element={<Navigate to="/" />} />
+          {/* Default redirect */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </div>
-    </>
+      </main>
+
+      {!hideNavbar && <Footer />}
+    </div>
   );
 }
 

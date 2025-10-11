@@ -1,0 +1,37 @@
+.app-footer {
+  width: 100%;
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  color: #ffffff;
+  text-align: center;
+  padding: 15px 10px;
+  font-family: "Poppins", sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+  margin-top: auto; /* Permet de le pousser en bas quand le contenu est court */
+}
+
+.footer-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.footer-content p {
+  margin: 0;
+  color: #e0e7ff;
+  transition: color 0.3s ease;
+}
+
+.footer-content p:hover {
+  color: #ffffff;
+}
+
+@media (max-width: 600px) {
+  .app-footer {
+    font-size: 13px;
+    padding: 12px;
+  }
+}
