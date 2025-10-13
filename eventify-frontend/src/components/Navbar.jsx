@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 
@@ -10,10 +10,11 @@ const Navbar = ({ user, onLogout }) => {
       localStorage.removeItem("user");
       onLogout?.();
       navigate("/login");
+      closeMenu(); // ✅ Fermer le menu après logout
     }
   };
 
-  // 🔹 Définition dynamique des liens selon le rôle
+  // 🔹 Récupération dynamique des liens
   const getLinks = () => {
     if (!user) {
       return [
@@ -24,7 +25,6 @@ const Navbar = ({ user, onLogout }) => {
       ];
     }
 
-    // Pour les utilisateurs connectés
     let links = [
       { label: "Accueil", to: "/" },
       { label: "Événements", to: "/events" },
@@ -43,15 +43,41 @@ const Navbar = ({ user, onLogout }) => {
 
   const links = getLinks();
 
+  // ✅ Fonction pour fermer le menu
+  const closeMenu = () => {
+    const navbar = document.querySelector(".navbar-mainbg");
+    navbar.classList.remove("active");
+  };
+
+  // ✅ Gestion du bouton burger
+  useEffect(() => {
+    const navbar = document.querySelector(".navbar-mainbg");
+    if (!navbar) return;
+
+    const toggleMenu = () => navbar.classList.toggle("active");
+
+    const handleClick = (e) => {
+      // Si on clique sur le burger (zone à droite)
+      if (e.offsetX > navbar.offsetWidth - 40) toggleMenu();
+    };
+
+    navbar.addEventListener("click", handleClick);
+    return () => navbar.removeEventListener("click", handleClick);
+  }, []);
+
   return (
-    <nav className="navbar navbar-expand-custom navbar-mainbg">
+    <nav className="navbar navbar-mainbg">
       <span className="navbar-brand navbar-logo">🎟️ Eventify</span>
 
       <div className="collapse navbar-collapse show" id="navbarSupportedContent">
         <ul className="navbar-nav ml-auto">
           {links.map((link) => (
             <li key={link.to} className="nav-item">
-              <Link className="nav-link" to={link.to}>
+              <Link
+                className="nav-link"
+                to={link.to}
+                onClick={closeMenu} // ✅ Fermer le menu au clic
+              >
                 {link.label}
               </Link>
             </li>

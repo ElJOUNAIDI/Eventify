@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../components/Navbar";
-const Home = ({ user }) => {
+const Home = () => { //{ user }
   const [events, setEvents] = useState([]);
   const navigate = useNavigate();
 
@@ -19,11 +19,11 @@ const Home = ({ user }) => {
   }, []);
 
   const handleRegisterClick = (eventId) => {
-    if (!user) {
-      alert("⚠️ Vous devez être connecté pour vous inscrire !");
-      navigate("/login");
-      return;
-    }
+    // if (!user) {
+    //   alert("⚠️ Vous devez être connecté pour vous inscrire !");
+    //   navigate("/login");
+    //   return;
+    // }
     navigate(`/events/${eventId}`);
   };
 

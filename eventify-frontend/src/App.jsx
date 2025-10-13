@@ -56,9 +56,9 @@ function App() {
           <Route
             path="/events/:id"
             element={
-              <PrivateRoute>
+              
                 <EventDetails user={user} />
-              </PrivateRoute>
+              
             }
           />
 
